@@ -13,6 +13,7 @@
 2. 新建类继承Site
 3. 查看网站登录逻辑，编写对应的request header, request data和对response的解析方法。调用`_login`方法。
 4. 查看网站的打卡逻辑，编写对应的request header, request data和对response的解析方法。调用`_daka`方法。
+注：具体可以参考samples目录下对应网站类的实现
 
 # TO-DO
 1. 优酷
