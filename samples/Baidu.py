@@ -2,15 +2,17 @@
 #-*- coding:utf-8 -*-
 import json
 import re
-import sys
-sys.path.append('../')
+import os,sys
+sys.path.append(os.path.abspath(os.path.join(sys.path[0], os.pardir)))
 from Site import Site
 from ConfigParser import ConfigParser
 from bs4 import BeautifulSoup
+from time import time
 
 class Baidu(Site):
 	def __init__(self):
-		Site.__init__(self,sitename="Baidu")
+		#Site.__init__(self,sitename="Baidu")
+		super(Baidu, self).__init__(sitename="Baidu")
 		self.LOGIN_URL="https://passport.baidu.com/v2/api/?login"
 		self.INDEX_URL = "http://www.baidu.com"
 		self.TOKEN_URL = "https://passport.baidu.com/v2/api/?getapi&tpl=mn&apiver=v3"
@@ -19,14 +21,14 @@ class Baidu(Site):
 		self._initial()
 		self._getToken()
 		bdHeaders = {
-                    "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                    "Accept-Encoding":"gzip,deflate,sdch",
-                    "Accept-Language":"en-US,en;q=0.8,zh;q=0.6",
-                    "Host":"passport.baidu.com",
-                    "Origin":"http://www.baidu.com",
-                    "Referer":"http://www.baidu.com/",
-                    "User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36",
-                 }
+			"Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+			"Accept-Encoding":"gzip,deflate,sdch",
+			"Accept-Language":"en-US,en;q=0.8,zh;q=0.6",
+			"Host":"passport.baidu.com",
+			"Origin":"http://www.baidu.com",
+			"Referer":"http://www.baidu.com/",
+			"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36",
+		}
 		bdData = {
 			"staticpage":"https://www.baidu.com/cache/user/html/v3Jump.html",
 			"token":self._token,
@@ -63,18 +65,18 @@ class Baidu(Site):
 		likeUrls = self._getMyTiebaURL()
 		#print likeUrls
 		signHeaders = {
-                "User-Agent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.66 Safari/537.36 LBBROWSER",
-                "Host":"tieba.baidu.com",
-                "Origin":"http://tieba.baidu.com",
-                "Referer":"http://tieba.baidu.com",
-              }
+			"User-Agent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.66 Safari/537.36 LBBROWSER",
+			"Host":"tieba.baidu.com",
+			"Origin":"http://tieba.baidu.com",
+			"Referer":"http://tieba.baidu.com",
+		}
 		signData = {
 			"ie":"utf-8",
 			"kw":"",
 			"tbs":"",
 		}
 		SIGN_URL = "http://tieba.baidu.com/sign/add"
-                for item in likeUrls:
+		for item in likeUrls:
 			title, url = item.split("::")
 			signData['kw'] = title.encode("utf-8")
 			signData["tbs"] = self.getTbTbs(url)
@@ -90,6 +92,51 @@ class Baidu(Site):
 			
 			self._daka(SIGN_URL, method="POST", headers=signHeaders, data=signData, respParserFunc=respParserFunc)
 
+	# 百度知道签到, untested
+	def _getZhidaoToken(self,url):
+		reg_gettk = re.compile("\"stoken\":\"(\w+)\"")
+		return reg_gettk.findall(self._opener.open(url).read().decode("gbk"))[0]
+	def zhidaoSignIn(self):
+		signHeaders = {
+			"User-Agent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.66 Safari/537.36 LBBROWSER",
+			"Host":"zhidao.baidu.com",
+			"Origin":"http://zhidao.baidu.com",
+			"Referer":"http://zhidao.baidu.com",
+		}
+		signData = {
+			"cm":100509,
+			"utdata":"14,14,50,48,62,48,48,14,54,51,51,55,43,62,55,55,14488028744070",
+			"stoken":self._getZhidaoToken("http://zhidao.baidu.com/")
+		}
+		print signData
+		SIGN_URL = "http://zhidao.baidu.com/submit/user"
+		def respParserFunc(resp):
+			resp = json.loads(resp.read().decode("utf-8"))
+			return (resp["errorNo"],resp["errorMsg"].decode("utf-8"))
+		self._daka(SIGN_URL, method="POST", headers=signHeaders, data=signData, respParserFunc=respParserFunc)
+
+	# 百度知道抽奖,untested
+	def _getluckyToken(self, url):
+		reg_getlkt = re.compile("'luckyToken', \'(\w+)\'")
+		return reg_getlkt.findall(self._opener.open(url).read().decode("gbk"))[0]
+	def zhidaolottery(self):
+		LotteryHeaders = {
+			"User-Agent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.66 Safari/537.36 LBBROWSER",
+			"Host":"zhidao.baidu.com",
+			"Referer":"http://zhidao.baidu.com/shop/lottery",
+		}
+		LotteryData = {
+			"type":0,
+			"token":self._getluckyToken("http://zhidao.baidu.com/shop/lottery"),
+			"_":str(int(time()*1000)),
+		}
+		print LotteryData
+		Lottery_URL = "http://zhidao.baidu.com/shop/submit/lottery"
+		def respParserFunc(resp):
+			resp = json.loads(resp.read().decode("gbk"))
+			print resp["errmsg"]
+			return (resp["errno"], "{0}\n{1}".format(resp["errmsg"].encode("utf-8"),resp.get("data")))
+		self._daka(Lottery_URL, headers=LotteryHeaders, data=LotteryData, respParserFunc=respParserFunc)
 
 if "__main__" == __name__:
 	#read configuration file
@@ -101,3 +148,4 @@ if "__main__" == __name__:
 	bd = Baidu()
 	bd.login(username,pwd)
 	bd.tiebaSignIn()
+	#bd.zhidaolottery()

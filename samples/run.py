@@ -1,10 +1,12 @@
 #!/usr/bin/python
 #-*- coding:utf-8 -*-
 import os,sys
+sys.path.append(os.path.abspath(os.path.join(sys.path[0], os.pardir)))
 from Baidu import Baidu
 from Hujiang import Hujiang
 from Mafengwo import Mafengwo
 from LifeVC import LifeVC
+from Zimuzu import Zimuzu
 from ConfigParser import ConfigParser
 
 if "__main__" == __name__:
@@ -38,4 +40,10 @@ if "__main__" == __name__:
 	mfw.login(username,pwd)
 	mfw.signIn()
 	mfw.getHoney()
+	#zimuzu auto sign in
+	username = cf.get("zimuzu","username")
+	pwd = cf.get("zimuzu","password")
+	zmz = Zimuzu()
+	zmz.login(username,pwd)
+	zmz.daka()
 

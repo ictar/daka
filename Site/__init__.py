@@ -40,6 +40,7 @@ class Site(object):
 			respParserFunc: function, used to parse the response. 
 		return: response code and message
 		"""
+		method = str(method).upper()
 		resp = self._get(url,headers,data) if "GET" == method else self._post(url, headers, data)
 		if respParserFunc is None: respParserFunc = self._respParserFunc
 		code, msg = respParserFunc(resp)

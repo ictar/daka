@@ -5,7 +5,7 @@ import hashlib
 import time,random
 import json
 import sys,os
-sys.path.append('../')
+sys.path.append(os.path.abspath(os.path.join(sys.path[0], os.pardir)))
 from Site import Site
 from ConfigParser import ConfigParser
 
