@@ -92,10 +92,10 @@ class Baidu(Site):
 			
 			self._daka(SIGN_URL, method="POST", headers=signHeaders, data=signData, respParserFunc=respParserFunc)
 
-	# 百度知道签到, untested
+	# 百度知道签到
 	def _getZhidaoToken(self,url):
 		reg_gettk = re.compile("\"stoken\":\"(\w+)\"")
-		return reg_gettk.findall(self._opener.open(url).read().decode("gbk"))[0]
+		return reg_gettk.findall(self._opener.open(url).read().decode("gbk"))[0:1]
 	def zhidaoSignIn(self):
 		signHeaders = {
 			"User-Agent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.66 Safari/537.36 LBBROWSER",
@@ -108,11 +108,10 @@ class Baidu(Site):
 			"utdata":"14,14,50,48,62,48,48,14,54,51,51,55,43,62,55,55,14488028744070",
 			"stoken":self._getZhidaoToken("http://zhidao.baidu.com/")
 		}
-		print signData
 		SIGN_URL = "http://zhidao.baidu.com/submit/user"
 		def respParserFunc(resp):
 			resp = json.loads(resp.read().decode("utf-8"))
-			return (resp["errorNo"],resp["errorMsg"].decode("utf-8"))
+			return (resp["errorNo"],resp["errorMsg"])
 		self._daka(SIGN_URL, method="POST", headers=signHeaders, data=signData, respParserFunc=respParserFunc)
 
 	# 百度知道抽奖,untested
@@ -134,11 +133,12 @@ class Baidu(Site):
 		Lottery_URL = "http://zhidao.baidu.com/shop/submit/lottery"
 		def respParserFunc(resp):
 			resp = json.loads(resp.read().decode("gbk"))
-			print resp["errmsg"]
-			return (resp["errno"], "{0}\n{1}".format(resp["errmsg"].encode("utf-8"),resp.get("data")))
+			print resp
+			return (resp["errno"], "{0}\n{1}".format(resp["errmsg"].encode("utf-8"),resp.get("data","").encode("utf-8")))
 		self._daka(Lottery_URL, headers=LotteryHeaders, data=LotteryData, respParserFunc=respParserFunc)
 
-if "__main__" == __name__:
+
+def run():
 	#read configuration file
 	configFile = "user_config.ini"
 	cf = ConfigParser()
@@ -148,4 +148,8 @@ if "__main__" == __name__:
 	bd = Baidu()
 	bd.login(username,pwd)
 	bd.tiebaSignIn()
+	bd.zhidaoSignIn()
 	#bd.zhidaolottery()
+
+if "__main__" == __name__:
+	run()

@@ -51,7 +51,8 @@ class LifeVC(Site):
 			return (resp.get("Status"), resp.get("Message"))
 		self._daka(SIGN_URL, method="POST", headers=signHeaders, respParserFunc=respParserFunc)
 
-if "__main__" == __name__:
+
+def run():
 	#read configuration file
 	configFile = os.path.join(sys.path[0],"user_config.ini")
 	cf = ConfigParser()
@@ -61,3 +62,6 @@ if "__main__" == __name__:
 	lvc = LifeVC()
 	lvc.login(username,pwd)
 	lvc.daka()
+	
+if "__main__" == __name__:
+	run()

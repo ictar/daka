@@ -9,7 +9,7 @@ import logging
 from settings import *
 
 class Site(object):
-	def __init__(self, logname="Site.log", sitename="", loginurl=""):
+	def __init__(self, logname="Site.log", sitename="Site", loginurl=""):
 		""" 
 		initial http related info and log object
 			logname: string, name of log file
@@ -23,11 +23,13 @@ class Site(object):
 		self._sitename = sitename
 		self.LOGIN_URL = loginurl
 		# log object
-		self._logger = logging.getLogger(__name__)
+		# 2016.01.12 将".getLogger(__name__)"修改为".getLogger(sitename)"以解决多次打印相同日志的问题
+		# 见文档中的说明：Multiple calls to getLogger() with the same name will always return a reference to the same Logger object.
+		self._logger = logging.getLogger(sitename)
 		self._logger.setLevel(logging.INFO)
 		self._handler = logging.FileHandler(logname)
 		self._handler.setLevel(logging.INFO)
-		self._handler.setFormatter(logging.Formatter('%(asctime)s - %(filename)s:%(lineno)d - %(levelname)s - %(message)s'))
+		self._handler.setFormatter(logging.Formatter('%(asctime)s - ' + sitename + ' - %(filename)s:%(lineno)d - %(levelname)s - %(message)s'))
 		self._logger.addHandler(self._handler)
 
 	def _process(self, url, method="GET", headers=settings.headers, data={}, respParserFunc=None):
@@ -46,19 +48,22 @@ class Site(object):
 		code, msg = respParserFunc(resp)
 		return (code, msg)
 
-	def _post(self, url, headers, data):
+	def _post(self, url, headers=None, data=None):
 		""" 
 		using method "POST"
 		"""
+		if headers is None: headers = settings.headers
+		if data is None: data = {}
 		req = urllib2.Request(url, headers = headers)
 		return self._opener.open(req, urllib.urlencode(data).encode("utf-8"))
 
-	def _get(self, url, headers, data):
+	def _get(self, url, headers=None, data=None):
 		""" 
 		using method "Get"
 		"""
+		if headers is None: headers = settings.headers
 		#print "{0}?{1}".format(url, urllib.urlencode(data))
-		url = "{0}?{1}".format(url, urllib.urlencode(data)) if url else url
+		url = "{0}?{1}".format(url, urllib.urlencode(data)) if data else url
 		req = urllib2.Request(url, headers = headers)
 		return self._opener.open(req)
 

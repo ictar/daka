@@ -13,7 +13,6 @@ from ConfigParser import ConfigParser
 class Hujiang(Site):
 	def __init__(self):
 		Site.__init__(self,sitename="Hujiang")
-		self.loginurl="http://pass.hujiang.com/quick/synclogin.aspx"
 		self.INDEX_URL = "http://bulo.hujiang.com/"
 		self._callback = "jQuery18307142652559559792_1442495521490"
 		self.LOGIN_URL = "http://pass.hujiang.com/quick/synclogin.aspx"
@@ -61,7 +60,7 @@ class Hujiang(Site):
 			if resp["code"] == 0:
 				self._logger.info("Get Token for user %s succeed~~" % user)
 			else:
-				self._logger.info("Wooooo, there must be something wrong~\n code = %s \n message = %s \n" % (resp["code"].encode("utf-8"), resp["message"].encode("utf-8")))
+				self._logger.error("Wooooo, there must be something wrong~\n code = %s \n message = %s \n" % (resp["code"].encode("utf-8"), resp["message"].encode("utf-8")))
 			return (resp["code"], resp["data"]["ssotoken"])
 		code, self._token = self._process(url, headers=hjHeaders, respParserFunc=respParserFunc)
 
@@ -89,7 +88,8 @@ class Hujiang(Site):
 				return (-999, u"未知错误！\n %s" % resp)
 		self._daka(SIGN_URL, headers=signHeaders, respParserFunc=respParserFunc)
 
-if __name__ == '__main__':
+
+def run():
 	#read configuration file
 	configFile = os.path.join(sys.path[0],"user_config.ini")
 	cf = ConfigParser()
@@ -99,3 +99,6 @@ if __name__ == '__main__':
 	hj = Hujiang()
 	hj.login(username,pwd)
 	hj.daka()
+
+if __name__ == '__main__':
+	run()

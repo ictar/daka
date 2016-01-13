@@ -62,7 +62,8 @@ class Zimuzu(Site):
 				return (-999, u"未知错误！\n %s" % "\n".join(resp))
 		self._daka(SIGN_URL, headers=signHeaders, respParserFunc=respParserFunc)
 
-if __name__ == '__main__':
+
+def run():
 	#read configuration file
 	configFile = os.path.join(sys.path[0],"user_config.ini")
 	cf = ConfigParser()
@@ -72,3 +73,6 @@ if __name__ == '__main__':
 	zmz = Zimuzu()
 	zmz.login(username,pwd)
 	zmz.daka()
+
+if __name__ == '__main__':
+	run()

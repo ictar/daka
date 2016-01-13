@@ -72,7 +72,8 @@ class Mafengwo(Site):
 			return (resp["ret"], resp["msg"])
 		self._daka(HONEY_URL, headers=honeyHeaders, respParserFunc=respParserFunc)
 
-if "__main__" == __name__:
+
+def run():
 	#read configuration file
 	configFile = os.path.join(sys.path[0],"user_config.ini")
 	cf = ConfigParser()
@@ -83,3 +84,6 @@ if "__main__" == __name__:
 	mfw.login(username,pwd)
 	mfw.signIn()
 	mfw.getHoney()
+
+if "__main__" == __name__:
+	run()
