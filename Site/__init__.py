@@ -38,7 +38,7 @@ class Site(object):
 		"""
 		allowed_find_type = ("css", "id",
 							"name", "tag",
-							"text", "value"
+							"text", "value",
 							"xpath")
 		if find_type not in allowed_find_type:
 			raise Exception("find_type {} is invalid.".format(find_type))
@@ -78,7 +78,8 @@ class Site(object):
 			self._click(*click_login)
 			time.sleep(delay_time)
 
-		self._process_form(data, btn, delay_time, **kws)
+		self._process_form(data, btn, **kws)
+		time.sleep(delay_time)
 		#self._logger.info("login resultCode is {0}, resultMsg is {1}".format(code, msg))
 		#return (code, msg)
 
