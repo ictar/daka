@@ -50,7 +50,7 @@ class Mafengwo(Site):
 		ts = int(time()*1000)
 		SIGN_URL = "http://www.mafengwo.cn/ajax/ajax_japp.php?callback=jQuery18105755553864366139_%s&app=daka&loaded_modules=%%2Fjs%%2FDropdown%%2CInputListener%%2CSuggestionXHR%%2CDropList%%2CSuggestion%%2C%%2Fjs%%2FSiteSearch%%2Cjq-upnum%%2Cdialog%%2FLayer%%2Cdialog%%2FDialogBase%%2Cdialog%%2FDialog%%2CTopTip%%2CSlider%%2Cjq-mousewheel%%2CScrollBar%%2CCookie%%2Cxdate%%2Cjqui-core%%2Cjqui-datepicker%%2CDateRangePicker%%2Cjq-tmpl%%2CPagination%%2CStorage%%2Cjq-jgrowl&params=%%7B%%7D&_=%s" % (str(ts), str(ts+33))
 		def respParserFunc(resp):
-			resp = json.loads(resp.read().decode("utf-8")[41:-1])
+			resp = json.loads(resp.read().decode("utf-8")[41:-2])
 			return (1, u"打卡成功~~") if resp["css"] else (-1, u"未知错误！\n %s" % resp)
 		self._daka(SIGN_URL, headers=signHeaders, respParserFunc=respParserFunc)
 
@@ -68,7 +68,9 @@ class Mafengwo(Site):
 		ts = int(time()*1000)
 		HONEY_URL = "http://www.mafengwo.cn/ajax/ajax_daka.php?act=getHoney&callback=jQuery18108634763753507286_%s&_=%s" % (str(ts), str(ts+50))
 		def respParserFunc(resp):
-			resp = json.loads(resp.read().decode("utf-8")[41:-1])
+			content = resp.read().decode("utf-8")
+			self._logger.info(content)
+			resp = json.loads(content[41:-2])
 			return (resp["ret"], resp["msg"])
 		self._daka(HONEY_URL, headers=honeyHeaders, respParserFunc=respParserFunc)
 
