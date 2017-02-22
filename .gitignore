@@ -1,0 +1,3 @@
+*.pyc
+*.log
+samples/user_config.ini
