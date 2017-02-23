@@ -30,7 +30,7 @@ class Xiami(Site):
 		except splinter.exceptions.ElementDoesNotExist as e:
 			pass
 
-if __name__ == '__main__':
+def run():
 	#read configuration file
 	configFile = os.path.join(sys.path[0],"user_config.ini")
 	cf = ConfigParser()
@@ -40,3 +40,6 @@ if __name__ == '__main__':
 	xm = Xiami()
 	xm.login(username,pwd)
 	xm.daka()
+	
+if __name__ == '__main__':
+	run()

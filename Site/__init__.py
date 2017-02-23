@@ -45,7 +45,7 @@ class Site(object):
 		finder = getattr(self._browser, "find_by_{}".format(find_type))
 		finder(selector).first.click()
 
-	def _process_form(self, form_data, btn, **kws):
+	def _process_form(self, form_data, btn, delay_time=3, **kws):
 		"""
 		process form
 		:param form_data dict key is field name while value is field value
@@ -54,6 +54,8 @@ class Site(object):
 
 		for k, v in form_data.items():
 			self._browser.fill(k, v)
+
+		time.sleep(delay_time)
 
 		self._click(*btn)
 
@@ -78,7 +80,7 @@ class Site(object):
 			self._click(*click_login)
 			time.sleep(delay_time)
 
-		self._process_form(data, btn, **kws)
+		self._process_form(data, btn, delay_time, **kws)
 		time.sleep(delay_time)
 		#self._logger.info("login resultCode is {0}, resultMsg is {1}".format(code, msg))
 		#return (code, msg)
