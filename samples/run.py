@@ -3,15 +3,13 @@
 import Baidu
 import Hujiang
 import Mafengwo
-import LifeVC
 import Zimuzu
-import SFexpress
+#import SFexpress
+import Xiami
 
 if "__main__" == __name__:
-	Hujiang.run()
-	Mafengwo.run()
-	LifeVC.run()
-	Zimuzu.run()
-	SFexpress.run()
-	Baidu.run()
-
+	for mdl in [Hujiang, Mafengwo, Zimuzu, Baidu, Xiami ]:
+		try:
+			mdl.run()
+		except Exception, e:
+			print e
